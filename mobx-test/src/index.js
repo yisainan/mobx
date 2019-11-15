@@ -1,3 +1,5 @@
+import { observable } from "mobx";
+
 // 2-1代码
 
 // class Animal {
@@ -20,55 +22,104 @@
 
 
 // 2-2代码
-function log(target) {
-    const desc = Object.getOwnPropertyDescriptors(target.prototype)
+// function log(target) {
+//     const desc = Object.getOwnPropertyDescriptors(target.prototype)
 
-    for (const key of Object.keys(desc)) {
-        if (key === 'constructor') {
-            continue
-        }
-        const func = desc[key].value;
+//     for (const key of Object.keys(desc)) {
+//         if (key === 'constructor') {
+//             continue
+//         }
+//         const func = desc[key].value;
 
-        if ('function' === typeof func) {
-            Object.defineProperty(target.prototype, key,{
-                value(...args){
-                    console.log('before ' + key)
-                    const ret = func.apply(this, args);
-                    console.log('after ' + key)
+//         if ('function' === typeof func) {
+//             Object.defineProperty(target.prototype, key,{
+//                 value(...args){
+//                     console.log('before ' + key)
+//                     const ret = func.apply(this, args);
+//                     console.log('after ' + key)
 
-                    return ret
-                }
-            })
-        }
-    }
+//                     return ret
+//                 }
+//             })
+//         }
+//     }
+// }
+
+// function readonly(target, key, descriptor){
+//     descriptor.writable = false
+// }
+
+// function validate(target, key, descriptor){
+//     const func = descriptor.value;
+//     descriptor.value = function (...args) {
+//         for (let num of args) {
+//             if ('number' != typeof num) {
+//                 throw new Error(`${num} is not a number`)
+//             }
+//         }
+//         return func.apply(this, args)
+//     }
+// }
+
+// @log // 类修饰器 
+// class Numberic {
+//     @readonly PI = 3.1415926; // 类属性成员修饰器
+
+//     @validate // 类方法成员修饰器
+//     add(...nums) {
+//         return nums.reduce((p, n) => (p + n), 0)
+//     }
+// }
+
+// new Numberic().add(1, 2) // 正确打印
+// // new Numberic().PI = 100 // 控制台报错 Uncaught TypeError: Cannot assign to read only property 'PI' of object '#<Numberic>'
+// new Numberic().add(1, 'x') // 控制台报错 index.js:55 Uncaught Error: x is not a number
+
+// 3-1代码
+// import {observable, isArrayLike} from  'mobx'
+
+// array
+
+// const arr = observable(['a', 'b', 'c'])
+// console.log(arr, Array.isArray(arr), isArrayLike(arr))
+// console.log(arr.pop(), arr.push('d'))
+// console.log(arr[4]) // 越界
+
+// object
+
+// const obj = observable({a: 1, b: 1})
+// console.log(obj)
+// console.log(obj.a, obj.b)
+
+// map
+
+// const map = observable(new Map())
+// console.log(map)
+// map.set('a', 1)
+// console.log(map.has('a'))
+// map.delete('a')
+// console.log(map.has('a'))
+
+// observable.box
+// var num = observable.box(20);
+// var str = observable.box('hello');
+// var bool = observable.box(true);
+
+// console.log(num, str, bool)
+// console.log(num.get(), str.get(), bool.get()) // 返回原始值
+
+// num.set(50)
+// str.set('world')
+// bool.set(false)
+
+// console.log(num.get(), str.get(), bool.get())
+
+class Store {
+    @observable array = [];
+    @observable obj = {};
+    @observable map = new Map();
+    
+    @observable string = 'hello';
+    @observable number = 20;
+    @observable bool = false;
 }
-
-function readonly(target, key, descriptor){
-    descriptor.writable = false
-}
-
-function validate(target, key, descriptor){
-    const func = descriptor.value;
-    descriptor.value = function (...args) {
-        for (let num of args) {
-            if ('number' != typeof num) {
-                throw new Error(`${num} is not a number`)
-            }
-        }
-        return func.apply(this, args)
-    }
-}
-
-@log // 类修饰器 
-class Numberic {
-    @readonly PI = 3.1415926; // 类属性成员修饰器
-
-    @validate // 类方法成员修饰器
-    add(...nums) {
-        return nums.reduce((p, n) => (p + n), 0)
-    }
-}
-
-new Numberic().add(1, 2) // 正确打印
-// new Numberic().PI = 100 // 控制台报错 Uncaught TypeError: Cannot assign to read only property 'PI' of object '#<Numberic>'
-new Numberic().add(1, 'x') // 控制台报错 index.js:55 Uncaught Error: x is not a number
