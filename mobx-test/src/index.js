@@ -1,4 +1,4 @@
-import { observable } from "mobx";
+import { observable, computed, autorun, when, reaction } from "mobx";
 
 // 2-1代码
 
@@ -114,12 +114,56 @@ import { observable } from "mobx";
 
 // console.log(num.get(), str.get(), bool.get())
 
+// 3-2代码
+
 class Store {
     @observable array = [];
     @observable obj = {};
     @observable map = new Map();
-    
+
     @observable string = 'hello';
     @observable number = 20;
     @observable bool = false;
+
+    @computed get mixed() {
+        return store.string + '/' + store.number
+    }
 }
+
+// computed
+var store = new Store()
+
+// var foo = computed(
+//     function(){
+//         return store.string + '/' + store.number
+//     }
+// )
+// console.log(foo)
+// console.log(foo.get())
+
+// foo.observe(function (change) {
+//     console.log(change)
+// })
+
+// store.string = 'world'
+// store.number = 30
+
+// autorun
+
+// autorun(()=>{
+//     // console.log(store.string + '/' + store.number) 
+//     console.log(store.mixed) 
+// })
+
+// store.string = 'world'
+// store.number = 30
+
+// when
+// when(()=>store.bool, ()=> console.log('it is true'))
+
+// store.bool = true
+
+// reaction
+reaction(()=>[store.string, store.number], arr=> console.log(arr.join('@')))
+store.string = 'world'
+store.number = 30
