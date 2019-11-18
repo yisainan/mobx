@@ -1,4 +1,4 @@
-import { observable, computed, autorun, when, reaction } from "mobx";
+import { observable, computed, autorun, when, reaction, action, runInAction } from "mobx";
 
 // 2-1代码
 
@@ -128,6 +128,11 @@ class Store {
     @computed get mixed() {
         return store.string + '/' + store.number
     }
+
+    @action bar(){
+        this.string = 'world'
+        this.number = 30
+    }
 }
 
 // computed
@@ -165,5 +170,17 @@ var store = new Store()
 
 // reaction
 reaction(()=>[store.string, store.number], arr=> console.log(arr.join('@')))
-store.string = 'world'
-store.number = 30
+// store.string = 'world'
+// store.number = 30
+
+// 3-3代码
+
+// store.bar()
+
+// var bar = store.bar
+// bar()
+
+runInAction('modify',()=>{
+    store.string = 'world'
+    store.number = 30
+})
